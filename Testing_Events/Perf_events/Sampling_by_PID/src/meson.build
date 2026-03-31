@@ -1,14 +1,30 @@
 bpf_o = 'prog.bpf.o'
 bpf_skel_h = 'prog.skel.h'
 
+# Generate vmlinux.h first
+vmlinux = custom_target('vmlinux',
+  command: [
+    'sh', '-c',
+    'bpftool btf dump file /sys/kernel/btf/vmlinux format c > ../src/vmlinux.h'
+  ],
+	output: 'vmlinux.h',
+)
+
+
 # Compile eBPF program
 bpf_prog = custom_target('bpf_prog',
-	command: [clang, '-O2', '-g', '-target', 'bpf', '-D__TARGET_ARCH_x86',
-		'-I' + meson.current_source_dir() / '..' / 'include',
-		'-c', '@INPUT@', '-o', '@OUTPUT@'],
 	input: 'prog.bpf.c',
 	output: bpf_o,
-	depends: vmlinux
+	command: [
+	clang,
+	'-target', 'bpf',
+	'-D__TARGET_ARCH_x86',
+	'-O2', '-g',
+		'-I', meson.current_source_dir(),
+		'-I', meson.current_build_dir() / 'src',
+		'-c', '@INPUT@',
+		'-o', '@OUTPUT@'],
+		depends: vmlinux
 )
 
 # Generate skeleton from eBPF object

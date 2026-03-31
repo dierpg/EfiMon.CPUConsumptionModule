@@ -1,5 +1,5 @@
 // prog.bpf.c
-#include "../include/vmlinux.h"
+#include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_core_read.h>
@@ -38,4 +38,3 @@ int on_sample(struct bpf_perf_event_data *ctx)
 }
 
 char LICENSE[] SEC("license") = "GPL";
-
